@@ -54,7 +54,7 @@ This release is a **complete overhaul** with a modern GUI and powerful new featu
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/meme-matcher.git
+git clone https://github.com/danishsyed-dev/meme-matcher.git
 cd meme-matcher
 
 # 2. Create virtual environment
