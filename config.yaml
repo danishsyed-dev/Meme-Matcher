@@ -1,0 +1,36 @@
+# Application configuration
+camera:
+  device_index: 0
+  width: 640
+  height: 480
+  fps_cap: 30
+
+detection:
+  face_confidence: 0.5
+  face_presence_confidence: 0.5
+  hand_confidence: 0.3
+  hand_presence_confidence: 0.3
+  tracking_confidence: 0.5
+  max_hands: 2
+
+matching:
+  weights:
+    surprise_score: 20
+    mouth_openness: 20
+    hand_raised: 20
+    eye_openness: 15
+  debounce_frames: 5
+  decay_factor: 5.0
+
+ui:
+  window_width: 1400
+  window_height: 900
+  display_height: 600
+  theme: dark
+
+assets:
+  folder: assets
+  supported_formats:
+    - ".jpg"
+    - ".png"
+    - ".jpeg"

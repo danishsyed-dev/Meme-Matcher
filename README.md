@@ -1,26 +1,28 @@
-# 🎭 Meme Matcher v2.0 — Real-time Facial Expression to Meme Matching
+# 🎭 Meme Matcher v3.0 — Real-time Facial Expression to Meme Matching
 
 A real-time computer vision application that matches your facial expressions and hand gestures to iconic internet memes using **MediaPipe's AI-powered face and hand detection**.
 
-![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white)
 ![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green?logo=opencv&logoColor=white)
 ![MediaPipe](https://img.shields.io/badge/MediaPipe-0.10-orange?logo=google&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-purple)
 
 ---
 
-## ✨ What's New in v2.0
+## ✨ What's New in v3.0
 
-This release is a **complete overhaul** with a modern GUI and powerful new features:
+This release is a **complete architectural redesign** of the v2.0 monolith:
 
 | Feature | Description |
 |---------|-------------|
-| 🖥️ **Modern Dark-Mode GUI** | A sleek, responsive desktop application built with Tkinter |
-| 📷 **Screenshot Capture** | Save your best meme matches with one click |
-| 📂 **Custom Meme Upload** | Add your own memes directly from the app |
-| 📈 **Expression History Graph** | Live visualization of your match scores over time |
-| 🔄 **Hot Reload** | Reload memes without restarting the application |
-| 🎨 **Meme Gallery** | Browse all active memes in the sidebar |
+| 🏗️ **Modular Architecture** | 15+ files across 6 sub-packages — easy to extend and test |
+| ⚙️ **Config-Driven** | All thresholds, weights, and UI settings in `config.yaml` |
+| 🧵 **Thread-Safe Camera** | Queue-based frame passing — no more cross-thread UI calls |
+| 🛡️ **Error Handling** | Graceful degradation for missing camera, models, or assets |
+| 🔀 **Match Debouncing** | Configurable frame threshold before switching matched meme |
+| 📊 **Status Bar** | Live FPS counter, camera state, meme count, keyboard shortcuts |
+| ⌨️ **Keyboard Shortcuts** | Space (screenshot), R (reload), Esc (quit) |
+| 🎨 **Improved Widgets** | Rounded buttons, better scrollable gallery |
 
 ---
 
@@ -67,7 +69,7 @@ python -m venv venv
 source venv/bin/activate
 
 # 4. Install dependencies
-pip install mediapipe opencv-python numpy pillow
+pip install -r requirements.txt
 
 # 5. Run the application
 python main.py
@@ -124,16 +126,43 @@ For each frame, the app calculates:
 
 ```
 meme-matcher/
-├── main.py              # Main application (GUI + Backend)
-├── assets/              # Meme images folder
+├── main.py                         # Entry point
+├── config.yaml                     # User-configurable settings
+├── requirements.txt                # Pinned dependencies
+├── PRD.md                          # Product Requirements Document
+├── README.md
+├── face_landmarker.task            # MediaPipe face model (auto-downloaded)
+├── hand_landmarker.task            # MediaPipe hand model (auto-downloaded)
+├── assets/                         # Meme images folder
 │   ├── angry_baby.jpg
 │   ├── disaster_girl.jpg
-│   ├── gene_wilder.jpg
-│   ├── leonardo_dicaprio.jpg
-│   ├── overly_attached_girlfriend.jpg
-│   └── success_kid.jpg
-├── .gitignore
-└── README.md
+│   └── ...
+└── src/
+    ├── __init__.py
+    ├── app.py                      # Application controller
+    ├── config.py                   # Config loader (reads config.yaml)
+    ├── detection/
+    │   ├── __init__.py
+    │   ├── face_detector.py        # Face landmark detection
+    │   ├── hand_detector.py        # Hand landmark detection
+    │   └── feature_extractor.py    # Composite feature computation
+    ├── matching/
+    │   ├── __init__.py
+    │   └── matcher.py              # Similarity scoring + debouncing
+    ├── camera/
+    │   ├── __init__.py
+    │   └── camera_manager.py       # Thread-safe camera capture
+    ├── ui/
+    │   ├── __init__.py
+    │   ├── main_window.py          # Root window + layout
+    │   ├── video_panel.py          # Camera feed display
+    │   ├── control_panel.py        # Side panel (buttons, gallery, stats)
+    │   ├── status_bar.py           # Bottom status bar
+    │   └── widgets.py              # Custom reusable widgets
+    └── utils/
+        ├── __init__.py
+        ├── image_utils.py          # Image processing helpers
+        └── model_downloader.py     # Model download with fallback
 ```
 
 ---
