@@ -53,23 +53,28 @@ class FeatureExtractor:
     def extract(self, bgr_image: np.ndarray) -> Optional[FeatureDict]:
         """
         Return a feature dict for *bgr_image*, or ``None`` if no face
-        is detected.
+        is detected or an error occurs during processing.
         """
-        rgb = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
-        mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
+        try:
+            rgb = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+            mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
 
-        if self._video_mode:
-            face_res = self._face.detect_for_video(mp_img)
-            hand_res = self._hand.detect_for_video(mp_img)
-        else:
-            face_res = self._face.detect(mp_img)
-            hand_res = self._hand.detect(mp_img)
+            if self._video_mode:
+                face_res = self._face.detect_for_video(mp_img)
+                hand_res = self._hand.detect_for_video(mp_img)
+            else:
+                face_res = self._face.detect(mp_img)
+                hand_res = self._hand.detect(mp_img)
 
-        if not face_res.face_landmarks:
+            if not face_res.face_landmarks:
+                return None
+
+            landmarks = face_res.face_landmarks[0]
+            return self._compute_features(landmarks, hand_res)
+
+        except Exception as exc:
+            logger.warning("Feature extraction failed: %s", exc)
             return None
-
-        landmarks = face_res.face_landmarks[0]
-        return self._compute_features(landmarks, hand_res)
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -126,6 +131,10 @@ class FeatureExtractor:
                     hand_raised = True
                     break
 
+        # Clamp smile_score to [0.0, 1.0] — mouth_ar > 1.0 would
+        # otherwise produce a negative score, distorting matching.
+        smile_score = max(0.0, min(1.0, 1.0 - mouth_ar))
+
         return {
             "eye_openness": avg_ear,
             "mouth_openness": mouth_ar,
@@ -134,7 +143,7 @@ class FeatureExtractor:
             "hand_raised": 1.0 if hand_raised else 0.0,
             "num_hands": float(num_hands),
             "surprise_score": avg_ear * float(avg_brow_height) * mouth_ar,
-            "smile_score": 1.0 - mouth_ar,
+            "smile_score": smile_score,
         }
 
     # ------------------------------------------------------------------

@@ -5,6 +5,7 @@ Control panel — sidebar with match info, buttons, stats graph, and meme galler
 from __future__ import annotations
 
 import tkinter as tk
+from collections import deque
 from tkinter import ttk
 from typing import Callable, List
 
@@ -33,7 +34,8 @@ class ControlPanel(tk.Frame):
         self._build_buttons(on_screenshot, on_upload, on_reload)
         self._build_gallery()
 
-        self._history: List[float] = []
+        # Use deque for O(1) append/pop with automatic max-length cap
+        self._history: deque[float] = deque(maxlen=50)
 
     # ── Sections ──────────────────────────────────────────────────────
 
@@ -80,9 +82,9 @@ class ControlPanel(tk.Frame):
         frame.pack(pady=20, fill=tk.X, padx=20)
 
         for text, cmd in [
-            ("\U0001F4F7  Save Screenshot", on_screenshot),
+            ("\U0001F4F7  Save Screenshot  (Ctrl+S)", on_screenshot),
             ("\U0001F4C2  Upload Custom Meme", on_upload),
-            ("\U0001F504  Reload Assets", on_reload),
+            ("\U0001F504  Reload Assets  (Ctrl+R)", on_reload),
         ]:
             ModernButton(frame, text, cmd, width=340).pack(pady=5, fill=tk.X)
 
@@ -105,8 +107,6 @@ class ControlPanel(tk.Frame):
         self._score_bar["value"] = min(score, 100)
 
         self._history.append(score)
-        if len(self._history) > 50:
-            self._history.pop(0)
         self._draw_stats()
 
     def clear_match(self) -> None:
@@ -148,7 +148,8 @@ class ControlPanel(tk.Frame):
             return
 
         w, h = 350, 100
-        step = w / 50
+        max_points = self._history.maxlen or 50
+        step = w / max_points
 
         points: List[float] = []
         for i, val in enumerate(self._history):

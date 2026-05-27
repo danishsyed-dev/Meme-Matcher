@@ -20,6 +20,9 @@ from ..config import CameraConfig
 
 logger = logging.getLogger(__name__)
 
+# Maximum consecutive read failures before the capture loop gives up.
+MAX_READ_RETRIES = 5
+
 
 class CameraManager:
     """
@@ -39,51 +42,61 @@ class CameraManager:
         self._config = config
         self._cap: Optional[cv2.VideoCapture] = None
         self._queue: queue.Queue[np.ndarray] = queue.Queue(maxsize=max_queue_size)
-        self._running = False
+
+        # Thread-safe signaling via Event instead of plain bool
+        self._stop_event = threading.Event()
         self._thread: Optional[threading.Thread] = None
+
+        # Shared mutable state protected by a lock
+        self._lock = threading.Lock()
         self._fps: float = 0.0
         self._error: Optional[str] = None
 
     # ------------------------------------------------------------------
     @property
     def is_running(self) -> bool:
-        return self._running
+        return not self._stop_event.is_set() and self._thread is not None and self._thread.is_alive()
 
     @property
     def fps(self) -> float:
-        return self._fps
+        with self._lock:
+            return self._fps
 
     @property
     def error(self) -> Optional[str]:
-        return self._error
+        with self._lock:
+            return self._error
 
     # ------------------------------------------------------------------
     def start(self) -> None:
         """Open the camera and begin capturing in a background thread."""
-        if self._running:
+        if self.is_running:
             return
 
         self._cap = cv2.VideoCapture(self._config.device_index)
         if not self._cap.isOpened():
-            self._error = (
-                f"Cannot open camera (device {self._config.device_index}). "
-                "Check that a webcam is connected."
-            )
+            with self._lock:
+                self._error = (
+                    f"Cannot open camera (device {self._config.device_index}). "
+                    "Check that a webcam is connected."
+                )
             logger.error(self._error)
             return
 
         self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._config.width)
         self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._config.height)
 
-        self._running = True
-        self._error = None
+        self._stop_event.clear()
+        with self._lock:
+            self._error = None
+
         self._thread = threading.Thread(target=self._capture_loop, daemon=True)
         self._thread.start()
         logger.info("Camera started (device %d)", self._config.device_index)
 
     def stop(self) -> None:
         """Signal the capture thread to stop and release the camera."""
-        self._running = False
+        self._stop_event.set()
         if self._thread is not None:
             self._thread.join(timeout=2.0)
             self._thread = None
@@ -104,13 +117,31 @@ class CameraManager:
     def _capture_loop(self) -> None:
         min_interval = 1.0 / self._config.fps_cap if self._config.fps_cap > 0 else 0
         prev_time = time.perf_counter()
+        consecutive_failures = 0
 
-        while self._running:
+        while not self._stop_event.is_set():
             ret, frame = self._cap.read()
             if not ret:
-                self._error = "Camera read failed"
-                logger.warning(self._error)
-                break
+                consecutive_failures += 1
+                logger.warning(
+                    "Camera read failed (%d/%d)",
+                    consecutive_failures,
+                    MAX_READ_RETRIES,
+                )
+                if consecutive_failures >= MAX_READ_RETRIES:
+                    with self._lock:
+                        self._error = (
+                            f"Camera disconnected after {MAX_READ_RETRIES} "
+                            "consecutive read failures."
+                        )
+                    logger.error(self._error)
+                    break
+                # Exponential backoff before retrying
+                time.sleep(0.1 * consecutive_failures)
+                continue
+
+            # Reset failure counter on successful read
+            consecutive_failures = 0
 
             frame = cv2.flip(frame, 1)  # Mirror for user-facing display
 
@@ -125,12 +156,11 @@ class CameraManager:
             # FPS calculation
             now = time.perf_counter()
             dt = now - prev_time
-            self._fps = 1.0 / dt if dt > 0 else 0
+            with self._lock:
+                self._fps = 1.0 / dt if dt > 0 else 0
             prev_time = now
 
             # Respect FPS cap
             sleep = min_interval - dt
             if sleep > 0:
                 time.sleep(sleep)
-
-        self._running = False

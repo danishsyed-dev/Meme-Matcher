@@ -4,6 +4,7 @@ Video panel — displays the live camera feed and matched meme.
 
 from __future__ import annotations
 
+import logging
 import tkinter as tk
 from typing import Optional
 
@@ -11,6 +12,8 @@ import numpy as np
 from PIL import Image, ImageTk
 
 from ..utils.image_utils import combine_side_by_side, cv2_to_pil, resize_keep_aspect
+
+logger = logging.getLogger(__name__)
 
 
 class VideoPanel(tk.Frame):
@@ -41,16 +44,21 @@ class VideoPanel(tk.Frame):
         meme_image: Optional[np.ndarray] = None,
     ) -> None:
         """Render a new frame (optionally combined with a meme)."""
-        if meme_image is not None:
-            combined = combine_side_by_side(camera_frame, meme_image)
-        else:
-            combined = camera_frame
+        try:
+            if meme_image is not None:
+                combined = combine_side_by_side(camera_frame, meme_image)
+            else:
+                combined = camera_frame
 
-        pil_img = cv2_to_pil(combined)
-        pil_img = resize_keep_aspect(pil_img, self._display_height)
+            pil_img = cv2_to_pil(combined)
+            pil_img = resize_keep_aspect(pil_img, self._display_height)
 
-        self._photo = ImageTk.PhotoImage(image=pil_img)
-        self._label.config(image=self._photo, text="")
+            self._photo = ImageTk.PhotoImage(image=pil_img)
+            self._label.config(image=self._photo, text="")
+
+        except Exception as exc:
+            logger.warning("Frame update failed: %s", exc)
+            self.show_error(f"Display error: {exc}")
 
     def show_error(self, message: str) -> None:
         self._label.config(

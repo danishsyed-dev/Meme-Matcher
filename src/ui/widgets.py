@@ -8,7 +8,12 @@ import tkinter as tk
 
 
 class ModernButton(tk.Canvas):
-    """A flat, hover-aware button drawn on a Canvas."""
+    """
+    A flat, hover-aware button drawn on a Canvas.
+
+    Supports keyboard navigation: focusable via Tab, activatable via
+    Return or Space, with a visible focus ring.
+    """
 
     def __init__(
         self,
@@ -20,6 +25,7 @@ class ModernButton(tk.Canvas):
         height: int = 40,
         bg_color: str = "#333333",
         hover_color: str = "#444444",
+        focus_color: str = "#007ACC",
         text_color: str = "white",
         font: tuple = ("Segoe UI", 10, "bold"),
         corner_radius: int = 6,
@@ -30,11 +36,15 @@ class ModernButton(tk.Canvas):
             height=height,
             bg=parent.cget("bg"),
             highlightthickness=0,
+            takefocus=True,  # Keyboard focusable
         )
         self._command = command
         self._bg = bg_color
         self._hover = hover_color
+        self._focus_color = focus_color
         self._radius = corner_radius
+        self._width = width
+        self._height = height
 
         # Draw rounded rectangle background
         self._rect = self._rounded_rect(2, 2, width - 2, height - 2, corner_radius, fill=bg_color, outline="")
@@ -42,9 +52,23 @@ class ModernButton(tk.Canvas):
             width / 2, height / 2, text=text, fill=text_color, font=font
         )
 
+        # Focus ring (hidden by default)
+        self._focus_ring = self._rounded_rect(
+            0, 0, width, height, corner_radius + 1,
+            fill="", outline=focus_color, width=2,
+        )
+        self.itemconfigure(self._focus_ring, state="hidden")
+
+        # Mouse events
         self.bind("<Enter>", self._on_enter)
         self.bind("<Leave>", self._on_leave)
         self.bind("<Button-1>", self._on_click)
+
+        # Keyboard events — Return and Space activate the button
+        self.bind("<Return>", self._on_click)
+        self.bind("<space>", self._on_click)
+        self.bind("<FocusIn>", self._on_focus_in)
+        self.bind("<FocusOut>", self._on_focus_out)
 
     def _rounded_rect(self, x1, y1, x2, y2, r, **kw):
         points = [
@@ -71,4 +95,15 @@ class ModernButton(tk.Canvas):
 
     def _on_click(self, _event):
         if self._command:
-            self._command()
+            try:
+                self._command()
+            except Exception:
+                # Prevent callback errors from crashing the Tk event loop
+                import logging
+                logging.getLogger(__name__).exception("Button callback error")
+
+    def _on_focus_in(self, _event):
+        self.itemconfigure(self._focus_ring, state="normal")
+
+    def _on_focus_out(self, _event):
+        self.itemconfigure(self._focus_ring, state="hidden")

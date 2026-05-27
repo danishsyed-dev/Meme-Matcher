@@ -31,7 +31,7 @@ class StatusBar(tk.Frame):
 
         self._shortcut_label = tk.Label(
             self,
-            text="Space: Screenshot  |  R: Reload  |  Esc: Quit",
+            text="Ctrl+S: Screenshot  |  Ctrl+R: Reload  |  Esc: Quit",
             bg="#007ACC",
             fg="#DDDDDD",
             font=("Consolas", 8),

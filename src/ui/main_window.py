@@ -34,6 +34,7 @@ class MainWindow:
         self.root = tk.Tk()
         self.root.title("Meme Matcher v3.0")
         self.root.geometry(f"{config.window_width}x{config.window_height}")
+        self.root.minsize(800, 600)  # Prevent collapsing to unusable size
         self.root.configure(bg="#1E1E1E")
         self.root.protocol("WM_DELETE_WINDOW", on_close)
 
@@ -58,8 +59,9 @@ class MainWindow:
         self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
         # ── Keyboard shortcuts ────────────────────────────────────────
-        self.root.bind("<space>", lambda _: on_screenshot())
-        self.root.bind("r", lambda _: on_reload())
+        # Use Ctrl+ modifiers to avoid conflicts with text entry widgets.
+        self.root.bind("<Control-s>", lambda _: on_screenshot())
+        self.root.bind("<Control-r>", lambda _: on_reload())
         self.root.bind("<Escape>", lambda _: on_close())
 
     # ------------------------------------------------------------------

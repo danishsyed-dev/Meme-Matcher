@@ -28,6 +28,9 @@ logger = logging.getLogger(__name__)
 
 POLL_INTERVAL_MS = 15  # ~66 FPS polling rate
 
+# Default screenshot output directory (relative to project root)
+SCREENSHOT_DIR = "screenshots"
+
 
 class App:
     """Top-level application controller."""
@@ -83,28 +86,36 @@ class App:
         self._window.root.after(POLL_INTERVAL_MS, self._tick)
 
     def _tick(self) -> None:
-        frame = self._camera.get_frame()
+        try:
+            frame = self._camera.get_frame()
 
-        if frame is not None:
-            # Detection
-            user_feats = self._extractor.extract(frame)
-            result = self._matcher.find_match(user_feats)
+            if frame is not None:
+                # Detection
+                user_feats = self._extractor.extract(frame)
+                result = self._matcher.find_match(user_feats)
 
-            meme_image = result.meme.image if result.meme else None
-            self._window.video_panel.update_frame(frame, meme_image)
-            self._last_frame = frame  # store for screenshot (raw camera only)
+                meme_image = result.meme.image if result.meme else None
+                self._window.video_panel.update_frame(frame, meme_image)
+                self._last_frame = frame  # store for screenshot (raw camera only)
 
-            if result.meme:
-                self._window.control_panel.set_match(result.meme.name, result.score)
-            else:
-                self._window.control_panel.clear_match()
+                if result.meme:
+                    self._window.control_panel.set_match(result.meme.name, result.score)
+                else:
+                    self._window.control_panel.clear_match()
 
-        # Update status bar continuously
-        self._window.status_bar.set_fps(self._camera.fps)
-        self._window.status_bar.set_camera_state(self._camera.is_running)
+            # Update status bar continuously
+            self._window.status_bar.set_fps(self._camera.fps)
+            self._window.status_bar.set_camera_state(self._camera.is_running)
 
-        # Reschedule
-        self._schedule_tick()
+        except Exception as exc:
+            # Log the error but never let the tick loop die
+            logger.exception("Error in frame processing tick: %s", exc)
+            self._window.video_panel.show_error(f"Processing error: {exc}")
+
+        finally:
+            # ALWAYS reschedule — this is critical for app responsiveness.
+            # Without this, a single exception would freeze the UI forever.
+            self._schedule_tick()
 
     # ------------------------------------------------------------------
     # Button callbacks
@@ -114,10 +125,20 @@ class App:
             messagebox.showwarning("Screenshot", "No frame available yet.")
             return
 
+        # Ensure screenshots directory exists
+        project_root = Path(__file__).resolve().parent.parent
+        screenshots_dir = project_root / SCREENSHOT_DIR
+        screenshots_dir.mkdir(exist_ok=True)
+
         ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        path = f"screenshot_{ts}.jpg"
-        cv2.imwrite(path, self._last_frame)
-        messagebox.showinfo("Saved", f"Screenshot saved to {path}")
+        path = screenshots_dir / f"screenshot_{ts}.jpg"
+
+        try:
+            cv2.imwrite(str(path), self._last_frame)
+            messagebox.showinfo("Saved", f"Screenshot saved to:\n{path}")
+        except Exception as exc:
+            logger.exception("Failed to save screenshot: %s", exc)
+            messagebox.showerror("Error", f"Failed to save screenshot:\n{exc}")
 
     def _upload_meme(self) -> None:
         path = filedialog.askopenfilename(
@@ -126,9 +147,25 @@ class App:
         if not path:
             return
 
-        dest = Path(self._config.assets.folder) / Path(path).name
-        shutil.copy(path, dest)
-        self._reload_assets()
+        try:
+            # Sanitize filename — strip path traversal components
+            safe_name = Path(path).name.replace("..", "_")
+            dest = Path(self._config.assets.folder) / safe_name
+
+            if dest.exists():
+                overwrite = messagebox.askyesno(
+                    "File Exists",
+                    f"'{safe_name}' already exists in the meme folder.\n"
+                    "Do you want to replace it?",
+                )
+                if not overwrite:
+                    return
+
+            shutil.copy(path, dest)
+            self._reload_assets()
+        except Exception as exc:
+            logger.exception("Failed to upload meme: %s", exc)
+            messagebox.showerror("Error", f"Failed to upload meme:\n{exc}")
 
     def _reload_assets(self) -> None:
         count = self._matcher.load_memes()
