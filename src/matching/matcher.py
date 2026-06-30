@@ -153,10 +153,24 @@ class Matcher:
 
         return MatchResult(self._current_match, best_score)
 
+    # Expected variance/range scales for features to normalize differences
+    FEATURE_SCALES = {
+        "eye_openness": 0.15,
+        "mouth_openness": 0.4,
+        "eyebrow_height": 0.05,
+        "head_tilt": 15.0,
+        "hand_raised": 1.0,
+        "num_hands": 1.0,
+        "surprise_score": 0.015,
+        "smile_score": 0.5,
+    }
+
     def _similarity(self, a: FeatureDict, b: FeatureDict) -> float:
         score = 0.0
         for key, weight in self._weights.items():
             if key in a and key in b:
                 diff = abs(a[key] - b[key])
-                score += weight * np.exp(-diff * self._decay)
+                scale = self.FEATURE_SCALES.get(key, 1.0)
+                norm_diff = diff / scale
+                score += weight * np.exp(-norm_diff * self._decay)
         return float(score)

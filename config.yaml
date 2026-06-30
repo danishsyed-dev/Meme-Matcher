@@ -19,6 +19,7 @@ matching:
     mouth_openness: 20
     hand_raised: 20
     eye_openness: 15
+    smile_score: 15
   debounce_frames: 5
   decay_factor: 5.0
 

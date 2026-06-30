@@ -39,6 +39,7 @@ class MatchingConfig:
         "mouth_openness": 20,
         "hand_raised": 20,
         "eye_openness": 15,
+        "smile_score": 15,
     })
     debounce_frames: int = 5
     decay_factor: float = 5.0

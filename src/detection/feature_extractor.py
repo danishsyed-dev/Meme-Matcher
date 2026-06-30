@@ -131,9 +131,11 @@ class FeatureExtractor:
                     hand_raised = True
                     break
 
-        # Clamp smile_score to [0.0, 1.0] — mouth_ar > 1.0 would
-        # otherwise produce a negative score, distorting matching.
-        smile_score = max(0.0, min(1.0, 1.0 - mouth_ar))
+        # Smile score: horizontal mouth stretch normalized by pupillary distance
+        eye_dist = float(np.linalg.norm(right_eye_centre - left_eye_centre))
+        norm_mouth_w = mouth_w / (eye_dist + 1e-6)
+        # Map norm_mouth_w range [0.72, 0.95] to [0.0, 1.0] smile intensity
+        smile_score = float(np.clip((norm_mouth_w - 0.72) / 0.23, 0.0, 1.0))
 
         return {
             "eye_openness": avg_ear,

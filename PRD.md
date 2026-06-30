@@ -103,7 +103,7 @@ A well-structured, modular desktop application with clear separation between det
 | FR-4.4 | Match confidence progress bar | P0 |
 | FR-4.5 | Scrollable meme gallery in the sidebar | P0 |
 | FR-4.6 | Expression history line graph | P1 |
-| FR-4.7 | Keyboard shortcuts: Space (screenshot), R (reload), Esc (quit) | P1 |
+| FR-4.7 | Keyboard shortcuts: Ctrl+S (screenshot), Ctrl+R (reload), Escape (quit) | P1 |
 | FR-4.8 | Loading splash screen while models initialize | P1 |
 
 ### FR-5: Asset Management
