@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meme Matcher — Match Your Face to Memes</title>
+  <meta name="description" content="Real-time facial expression to meme matching, powered by MediaPipe AI — right in your browser." />
+  <meta name="theme-color" content="#0c0c0e" />
+
+  <!-- Fonts (loaded via CSS @import in tokens.css) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- ── Loading Overlay ──────────────────────────────────── -->
+    <div class="loading-state" id="loading-overlay">
+      <div class="loading-state__spinner"></div>
+      <p class="loading-state__message" id="loading-message">Loading MediaPipe models…</p>
+    </div>
+
+    <!-- ── Header ───────────────────────────────────────────── -->
+    <header class="header">
+      <div class="header__brand">
+        <h1 class="header__title">Meme Matcher</h1>
+        <span class="header__version">v3.0</span>
+      </div>
+      <div class="header__status">
+        <span class="status-pill" id="status-fps">FPS: --</span>
+        <span class="status-pill" id="status-camera">Camera: OFF</span>
+        <span class="status-pill" id="status-memes">Memes: 0</span>
+      </div>
+    </header>
+
+    <!-- ── Main Content ─────────────────────────────────────── -->
+    <main class="main">
+      <!-- Webcam feed -->
+      <section class="video-container" id="video-container">
+        <video id="webcam" autoplay playsinline muted></video>
+        <div class="video-container__placeholder" id="video-placeholder">
+          <p>Point your camera. Make a face. Become a meme.</p>
+        </div>
+        <div class="video-container__error" id="video-error" hidden>
+          <p id="error-message"></p>
+          <button class="btn" id="btn-retry">Try again</button>
+        </div>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- Match Card -->
+        <div class="match-card" id="match-card">
+          <div class="match-card__image-wrapper">
+            <img class="match-card__image" id="match-image" src="" alt="Matched meme" hidden />
+            <div class="match-card__empty" id="match-empty">
+              <p>No match yet</p>
+              <span>Make an expression!</span>
+            </div>
+          </div>
+          <div class="match-card__info">
+            <p class="match-card__name" id="match-name">Waiting…</p>
+            <div class="match-card__score-wrapper">
+              <div class="match-card__score-track">
+                <div class="match-card__score-fill" id="match-score-fill"></div>
+              </div>
+              <span class="match-card__score-label" id="match-score-label">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expression History -->
+        <div class="history" id="history-panel">
+          <p class="history__label">Expression history</p>
+          <svg class="history__chart" id="history-chart" viewBox="0 0 300 60" preserveAspectRatio="none">
+            <polyline id="history-line" fill="none" stroke="var(--color-accent)" stroke-width="2" points="" />
+          </svg>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions">
+          <button class="btn" id="btn-screenshot">
+            <span>📷</span> Save screenshot
+          </button>
+          <button class="btn" id="btn-reload">
+            <span>🔄</span> Reload memes
+          </button>
+        </div>
+      </aside>
+    </main>
+
+    <!-- ── Meme Gallery Strip ───────────────────────────────── -->
+    <nav class="gallery" id="gallery" aria-label="Meme gallery">
+      <!-- Thumbnails injected by JS -->
+    </nav>
+
+    <!-- ── Keyboard Shortcut Badge ──────────────────────────── -->
+    <div class="shortcut-badge" id="shortcut-badge">
+      <kbd>Ctrl+S</kbd> Screenshot &nbsp;·&nbsp; <kbd>Ctrl+R</kbd> Reload
+    </div>
+
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

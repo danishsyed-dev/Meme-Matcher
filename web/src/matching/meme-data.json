@@ -1,0 +1,156 @@
+[
+  {
+    "name": "Angry Baby",
+    "filename": "angry_baby.jpg",
+    "features": {
+      "eye_openness": 2.529518791707228,
+      "mouth_openness": 0.7326825836851371,
+      "eyebrow_height": 0.07938641607761382,
+      "head_tilt": 2.925965465898355,
+      "hand_raised": 0.0,
+      "num_hands": 0.0,
+      "surprise_score": 0.14712957293462642,
+      "smile_score": 0.13616160951363315
+    }
+  },
+  {
+    "name": "Disaster Girl",
+    "filename": "disaster_girl.jpg",
+    "features": {
+      "eye_openness": 3.129199564090796,
+      "mouth_openness": 0.011687978047173241,
+      "eyebrow_height": 0.053554991881052616,
+      "head_tilt": 3.4089395500505764,
+      "hand_raised": 0.0,
+      "num_hands": 0.0,
+      "surprise_score": 0.001958721119779033,
+      "smile_score": 0.8007746696884083
+    }
+  },
+  {
+    "name": "Gene Wilder",
+    "filename": "gene_wilder.jpg",
+    "features": {
+      "eye_openness": 2.4979040363385057,
+      "mouth_openness": 0.13014119165552773,
+      "eyebrow_height": 0.04182740449905395,
+      "head_tilt": -8.38911717537329,
+      "hand_raised": 1.0,
+      "num_hands": 1.0,
+      "surprise_score": 0.013597261351734957,
+      "smile_score": 1.0
+    }
+  },
+  {
+    "name": "Laughing Meme",
+    "filename": "Laughing_Meme.jpg",
+    "features": {
+      "eye_openness": 3.898365003400186,
+      "mouth_openness": 0.8924800578538156,
+      "eyebrow_height": 0.03922157337268192,
+      "head_tilt": 1.96330608302335,
+      "hand_raised": 0.0,
+      "num_hands": 1.0,
+      "surprise_score": 0.13646020889098118,
+      "smile_score": 1.0
+    }
+  },
+  {
+    "name": "Leonardo Dicaprio",
+    "filename": "leonardo_dicaprio.jpg",
+    "features": {
+      "eye_openness": 3.215719151097203,
+      "mouth_openness": 0.008136068829409128,
+      "eyebrow_height": 0.05162431448698043,
+      "head_tilt": -12.884529250646912,
+      "hand_raised": 0.0,
+      "num_hands": 1.0,
+      "surprise_score": 0.0013506630647452823,
+      "smile_score": 1.0
+    }
+  },
+  {
+    "name": "Overly Attached Girlfriend",
+    "filename": "overly_attached_girlfriend.jpg",
+    "features": {
+      "eye_openness": 3.512093009805236,
+      "mouth_openness": 0.295830014880196,
+      "eyebrow_height": 0.05311220635970432,
+      "head_tilt": 10.753840305698668,
+      "hand_raised": 0.0,
+      "num_hands": 0.0,
+      "surprise_score": 0.05518265439681019,
+      "smile_score": 1.0
+    }
+  },
+  {
+    "name": "Shocked Man",
+    "filename": "shocked_man.jpg",
+    "features": {
+      "eye_openness": 2.8997412131872706,
+      "mouth_openness": 0.6727486964192944,
+      "eyebrow_height": 0.0733491435647011,
+      "head_tilt": 0.17639601377472458,
+      "hand_raised": 0.0,
+      "num_hands": 0.0,
+      "surprise_score": 0.1430892981030061,
+      "smile_score": 0.13541948159099018
+    }
+  },
+  {
+    "name": "Smart Thinking",
+    "filename": "smart_thinking.jpg",
+    "features": {
+      "eye_openness": 2.3861174629675848,
+      "mouth_openness": 0.00022750224832845917,
+      "eyebrow_height": 0.04198439915974933,
+      "head_tilt": -11.28622805916137,
+      "hand_raised": 0.0,
+      "num_hands": 1.0,
+      "surprise_score": 2.2791108808544625e-05,
+      "smile_score": 0.7641572205379425
+    }
+  },
+  {
+    "name": "Smiley Texting",
+    "filename": "Smiley_texting.jpg",
+    "features": {
+      "eye_openness": 4.210543222055264,
+      "mouth_openness": 0.02686452964950383,
+      "eyebrow_height": 0.05059854487578075,
+      "head_tilt": -7.644006084845546,
+      "hand_raised": 0.0,
+      "num_hands": 2.0,
+      "surprise_score": 0.005723417124104737,
+      "smile_score": 0.6923014821888168
+    }
+  },
+  {
+    "name": "Success Kid",
+    "filename": "success_kid.jpg",
+    "features": {
+      "eye_openness": 2.469473974875531,
+      "mouth_openness": 0.0027686287897523334,
+      "eyebrow_height": 0.02105559607346852,
+      "head_tilt": 6.784761447733326,
+      "hand_raised": 1.0,
+      "num_hands": 1.0,
+      "surprise_score": 0.00014395830509903308,
+      "smile_score": 0.08217184410239374
+    }
+  },
+  {
+    "name": "Unimpressed Actor",
+    "filename": "unimpressed_actor.jpg",
+    "features": {
+      "eye_openness": 3.685222665935453,
+      "mouth_openness": 0.19082896917502212,
+      "eyebrow_height": 0.05145397384961445,
+      "head_tilt": 6.184325747521639,
+      "hand_raised": 0.0,
+      "num_hands": 1.0,
+      "surprise_score": 0.036184865226483315,
+      "smile_score": 0.4856838001945319
+    }
+  }
+]

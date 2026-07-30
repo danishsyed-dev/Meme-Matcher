@@ -1,6 +1,13 @@
 
 # Python bytecode
 __pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Web app
+web/node_modules/
+web/dist/
 *.pyc
 *.pyo
 

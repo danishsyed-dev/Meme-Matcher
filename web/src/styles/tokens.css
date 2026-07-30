@@ -1,0 +1,74 @@
+/* tokens.css */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Outfit:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Colors - Editorial Dark */
+  --color-bg: #0c0c0e;
+  --color-surface: #18181b;
+  --color-surface-elevated: #27272a;
+  --color-accent: #f59e0b; /* Warm Amber */
+  --color-text-primary: #e4e4e7;
+  --color-text-muted: #71717a;
+  --color-text-inverse: #18181b;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-border: #27272a;
+
+  /* Typography */
+  --font-heading: 'Outfit', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  
+  /* Fluid Typography Scale */
+  --text-xs: clamp(0.75rem, 0.71rem + 0.18vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.84rem + 0.18vw, 1rem);
+  --text-base: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1.08rem + 0.22vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.18rem + 0.36vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.36rem + 0.71vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.66rem + 1.07vw, 2.5rem);
+  --text-4xl: clamp(2.25rem, 1.96rem + 1.43vw, 3rem);
+
+  /* Spacing Scale */
+  --space-xs: 0.25rem;  /* 4px */
+  --space-sm: 0.5rem;   /* 8px */
+  --space-md: 1rem;     /* 16px */
+  --space-lg: 1.5rem;   /* 24px */
+  --space-xl: 2rem;     /* 32px */
+  --space-2xl: 2.5rem;  /* 40px */
+  --space-3xl: 3rem;    /* 48px */
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+  --shadow-elevated: 0 4px 6px -1px rgb(0 0 0 / 0.7), 0 2px 4px -2px rgb(0 0 0 / 0.7);
+  
+  /* Z-Index */
+  --z-base: 1;
+  --z-overlay: 10;
+  --z-modal: 20;
+  --z-toast: 30;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}

@@ -1,0 +1,64 @@
+import memeData from './meme-data.json';
+
+const FEATURE_WEIGHTS = {
+  surprise_score: 20,
+  mouth_openness: 20,
+  hand_raised: 20,
+  eye_openness: 15
+};
+const DECAY_FACTOR = 5.0;
+const DEBOUNCE_FRAMES = 5;
+
+let memes = [];
+let establishedMatch = null;
+let candidateMatch = null;
+let candidateFrames = 0;
+
+export async function initMatcher() {
+  memes = memeData;
+  return memes.length;
+}
+
+export function findMatch(userFeatures) {
+  if (!userFeatures || memes.length === 0) {
+    return { meme: null, score: 0 };
+  }
+
+  let bestMeme = null;
+  let bestScore = -1;
+
+  for (const meme of memes) {
+    let score = 0;
+    
+    for (const [feature, weight] of Object.entries(FEATURE_WEIGHTS)) {
+      const userFeat = userFeatures[feature] || 0;
+      const memeFeat = meme.features[feature] || 0;
+      score += weight * Math.exp(-DECAY_FACTOR * Math.abs(userFeat - memeFeat));
+    }
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMeme = meme;
+    }
+  }
+
+  const maxPossibleScore = Object.values(FEATURE_WEIGHTS).reduce((a, b) => a + b, 0);
+  const normalizedScore = (bestScore / maxPossibleScore) * 100;
+
+  if (candidateMatch && candidateMatch.filename === bestMeme.filename) {
+    candidateFrames++;
+  } else {
+    candidateMatch = bestMeme;
+    candidateFrames = 1;
+  }
+
+  if (candidateFrames >= DEBOUNCE_FRAMES) {
+    establishedMatch = candidateMatch;
+  }
+
+  return { meme: establishedMatch, score: establishedMatch ? normalizedScore : 0 };
+}
+
+export function getMemes() {
+  return memes;
+}

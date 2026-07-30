@@ -15,13 +15,14 @@ This release is a **complete architectural redesign** of the v2.0 monolith:
 
 | Feature | Description |
 |---------|-------------|
+| 🌐 **Web Version** | Client-side Vite + MediaPipe JS app — runs 100% in browser |
 | 🏗️ **Modular Architecture** | 15+ files across 6 sub-packages — easy to extend and test |
 | ⚙️ **Config-Driven** | All thresholds, weights, and UI settings in `config.yaml` |
 | 🧵 **Thread-Safe Camera** | Queue-based frame passing — no more cross-thread UI calls |
 | 🛡️ **Error Handling** | Graceful degradation for missing camera, models, or assets |
 | 🔀 **Match Debouncing** | Configurable frame threshold before switching matched meme |
 | 📊 **Status Bar** | Live FPS counter, camera state, meme count, keyboard shortcuts |
-| ⌨️ **Keyboard Shortcuts** | Space (screenshot), R (reload), Esc (quit) |
+| ⌨️ **Keyboard Shortcuts** | Ctrl+S (screenshot), Ctrl+R (reload), Esc (quit) |
 | 🎨 **Improved Widgets** | Rounded buttons, better scrollable gallery |
 
 ---
@@ -52,7 +53,7 @@ This release is a **complete architectural redesign** of the v2.0 monolith:
 - Python 3.11+
 - Webcam
 
-### Quick Setup
+### Quick Setup (Desktop App)
 
 ```bash
 # 1. Clone the repository
@@ -76,6 +77,23 @@ python main.py
 ```
 
 > 💡 **Note**: The first run will automatically download MediaPipe models (~11MB total).
+
+---
+
+### 🌐 Quick Setup (Web App)
+
+```bash
+# 1. Navigate to web directory
+cd web
+
+# 2. Install dependencies
+npm install
+
+# 3. Start development server
+npm run dev
+```
+
+Open `http://localhost:3000` in your browser. Runs 100% client-side with MediaPipe JS!
 
 ---
 
@@ -126,43 +144,31 @@ For each frame, the app calculates:
 
 ```
 meme-matcher/
-├── main.py                         # Entry point
+├── main.py                         # Desktop app entry point
 ├── config.yaml                     # User-configurable settings
-├── requirements.txt                # Pinned dependencies
+├── requirements.txt                # Pinned Python dependencies
 ├── PRD.md                          # Product Requirements Document
+├── PROJECT_KNOWLEDGE_BASE.md       # Comprehensive technical documentation
 ├── README.md
 ├── face_landmarker.task            # MediaPipe face model (auto-downloaded)
 ├── hand_landmarker.task            # MediaPipe hand model (auto-downloaded)
 ├── assets/                         # Meme images folder
-│   ├── angry_baby.jpg
-│   ├── disaster_girl.jpg
-│   └── ...
-└── src/
-    ├── __init__.py
+├── scripts/                        # Extraction & build helper scripts
+│   └── extract_meme_features.py    # Extracts meme features -> web/src/matching/meme-data.json
+├── web/                            # Client-Side Web Application (Vite + MediaPipe JS)
+│   ├── package.json                # Web dependencies (@mediapipe/tasks-vision, vite)
+│   ├── vite.config.js              # Vite dev server & build config
+│   ├── index.html                  # Single-page HTML shell
+│   ├── public/                     # Static browser assets (memes & task models)
+│   └── src/                        # ES modules (detection, matching, UI, CSS design system)
+└── src/                            # Desktop application source code (Python/Tkinter)
     ├── app.py                      # Application controller
     ├── config.py                   # Config loader (reads config.yaml)
-    ├── detection/
-    │   ├── __init__.py
-    │   ├── face_detector.py        # Face landmark detection
-    │   ├── hand_detector.py        # Hand landmark detection
-    │   └── feature_extractor.py    # Composite feature computation
-    ├── matching/
-    │   ├── __init__.py
-    │   └── matcher.py              # Similarity scoring + debouncing
-    ├── camera/
-    │   ├── __init__.py
-    │   └── camera_manager.py       # Thread-safe camera capture
-    ├── ui/
-    │   ├── __init__.py
-    │   ├── main_window.py          # Root window + layout
-    │   ├── video_panel.py          # Camera feed display
-    │   ├── control_panel.py        # Side panel (buttons, gallery, stats)
-    │   ├── status_bar.py           # Bottom status bar
-    │   └── widgets.py              # Custom reusable widgets
-    └── utils/
-        ├── __init__.py
-        ├── image_utils.py          # Image processing helpers
-        └── model_downloader.py     # Model download with fallback
+    ├── detection/                  # Face & hand landmark detectors + feature extractor
+    ├── matching/                   # Similarity scoring + debouncing
+    ├── camera/                     # Thread-safe camera capture
+    ├── ui/                         # Tkinter window, panels, and custom canvas widgets
+    └── utils/                      # Image processing & model downloader helpers
 ```
 
 ---
