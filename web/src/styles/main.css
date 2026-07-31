@@ -255,24 +255,35 @@
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
   background-color: var(--color-surface-elevated);
   color: var(--color-text-primary);
-  border: none;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: var(--space-md);
-  font-size: var(--text-base);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
-  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+              background-color 160ms ease,
+              border-color 160ms ease;
   text-align: center;
+  user-select: none;
 }
 
-.btn:hover {
-  background-color: #333336;
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    background-color: #323236;
+    border-color: #3f3f46;
+  }
 }
 
 .btn:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .btn:focus-visible {
@@ -283,10 +294,13 @@
 .btn--primary {
   background-color: var(--color-accent);
   color: var(--color-text-inverse);
+  border-color: transparent;
 }
 
-.btn--primary:hover {
-  background-color: #fcd34d; /* Lighter amber */
+@media (hover: hover) and (pointer: fine) {
+  .btn--primary:hover {
+    background-color: #fcd34d;
+  }
 }
 
 /* Gallery */
@@ -298,36 +312,45 @@
   background-color: var(--color-surface);
   border-top: 1px solid var(--color-border);
   overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
   animation: fadeIn 400ms ease-out 300ms forwards;
   opacity: 0;
 }
 
 .gallery::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none;
 }
 
 .gallery__item {
-  width: 80px;
-  height: 60px;
-  border-radius: var(--radius-sm);
+  width: 84px;
+  height: 62px;
+  border-radius: var(--radius-md);
   object-fit: cover;
-  opacity: 0.6;
-  transition: opacity var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+  opacity: 0.55;
+  transition: opacity 160ms cubic-bezier(0.23, 1, 0.32, 1),
+              transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+              border-color 160ms ease,
+              box-shadow 160ms ease;
   border: 2px solid transparent;
   cursor: pointer;
   flex-shrink: 0;
+  scroll-snap-align: start;
 }
 
-.gallery__item:hover {
-  opacity: 1;
-  transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .gallery__item:hover {
+    opacity: 0.9;
+    transform: scale(1.04);
+  }
 }
 
 .gallery__item--active,
 .gallery__item:active {
   opacity: 1;
   border-color: var(--color-accent);
+  transform: scale(1.04);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
 }
 
 /* Shortcut Badge */
@@ -340,11 +363,20 @@
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   z-index: var(--z-overlay);
   box-shadow: var(--shadow-subtle);
   border: 1px solid var(--color-border);
   pointer-events: none;
+}
+
+.shortcut-badge kbd {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+  font-size: 0.75rem;
 }
 
 /* States */
