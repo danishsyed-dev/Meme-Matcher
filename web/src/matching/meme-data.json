@@ -63,7 +63,7 @@
       "mouth_openness": 0.008136068829409128,
       "eyebrow_height": 0.05162431448698043,
       "head_tilt": -12.884529250646912,
-      "hand_raised": 0.0,
+      "hand_raised": 1.0,
       "num_hands": 1.0,
       "surprise_score": 0.0013506630647452823,
       "smile_score": 1.0
@@ -105,7 +105,7 @@
       "mouth_openness": 0.00022750224832845917,
       "eyebrow_height": 0.04198439915974933,
       "head_tilt": -11.28622805916137,
-      "hand_raised": 0.0,
+      "hand_raised": 1.0,
       "num_hands": 1.0,
       "surprise_score": 2.2791108808544625e-05,
       "smile_score": 0.7641572205379425
@@ -119,7 +119,7 @@
       "mouth_openness": 0.02686452964950383,
       "eyebrow_height": 0.05059854487578075,
       "head_tilt": -7.644006084845546,
-      "hand_raised": 0.0,
+      "hand_raised": 1.0,
       "num_hands": 2.0,
       "surprise_score": 0.005723417124104737,
       "smile_score": 0.6923014821888168
@@ -147,7 +147,7 @@
       "mouth_openness": 0.19082896917502212,
       "eyebrow_height": 0.05145397384961445,
       "head_tilt": 6.184325747521639,
-      "hand_raised": 0.0,
+      "hand_raised": 1.0,
       "num_hands": 1.0,
       "surprise_score": 0.036184865226483315,
       "smile_score": 0.4856838001945319

@@ -50,8 +50,8 @@ function eyeAspectRatio(landmarks, upperIds, lowerIds) {
     }
     const verticalDist = verticalSum / upperIds.length;
     
-    // Approximate horizontal width as the distance between the first and last points in lowerIds
-    const horizontalDist = dist(pt(landmarks, lowerIds[0]), pt(landmarks, lowerIds[lowerIds.length - 1])) + 1e-6;
+    // Horizontal distance uses upper_ids[first] to upper_ids[last] — matching Python
+    const horizontalDist = dist(pt(landmarks, upperIds[0]), pt(landmarks, upperIds[upperIds.length - 1])) + 1e-6;
     
     return verticalDist / horizontalDist;
 }
@@ -101,15 +101,19 @@ export function extractFeatures(faceLandmarks, handLandmarks) {
     const mouthWidth = dist(pt(face, MOUTH_LEFT), pt(face, MOUTH_RIGHT)) + 1e-6;
     const mouth_openness = mouthHeight / mouthWidth;
 
-    // 3. eyebrow_height
+    // 3. eyebrow_height — Y-only difference (brow above eye → positive), matching Python
     const leftEyeCenter = getCenter(face, [...LEFT_EYE_UPPER, ...LEFT_EYE_LOWER]);
     const rightEyeCenter = getCenter(face, [...RIGHT_EYE_UPPER, ...RIGHT_EYE_LOWER]);
-    const leftEyebrowCenter = getCenter(face, LEFT_EYEBROW);
-    const rightEyebrowCenter = getCenter(face, RIGHT_EYEBROW);
     
-    const leftEyebrowHeight = dist(leftEyebrowCenter, leftEyeCenter);
-    const rightEyebrowHeight = dist(rightEyebrowCenter, rightEyeCenter);
-    const eyebrow_height = (leftEyebrowHeight + rightEyebrowHeight) / 2.0;
+    let leftBrowY = 0;
+    for (const idx of LEFT_EYEBROW) leftBrowY += pt(face, idx).y;
+    leftBrowY /= LEFT_EYEBROW.length;
+    
+    let rightBrowY = 0;
+    for (const idx of RIGHT_EYEBROW) rightBrowY += pt(face, idx).y;
+    rightBrowY /= RIGHT_EYEBROW.length;
+    
+    const eyebrow_height = ((leftEyeCenter.y - leftBrowY) + (rightEyeCenter.y - rightBrowY)) / 2.0;
 
     // 4. head_tilt
     const dx = rightEyeCenter.x - leftEyeCenter.x;
@@ -141,8 +145,11 @@ export function extractFeatures(faceLandmarks, handLandmarks) {
     // 6. surprise_score
     const surprise_score = eye_openness * eyebrow_height * mouth_openness;
 
-    // 7. smile_score
-    const smile_score = Math.max(0, Math.min(1, 1 - mouth_openness));
+    // 7. smile_score — pupillary-distance normalized mouth width, matching Python
+    const eyeDist = dist(rightEyeCenter, leftEyeCenter) + 1e-6;
+    const normMouthW = mouthWidth / eyeDist;
+    // Map [0.72, 0.95] → [0.0, 1.0]
+    const smile_score = Math.max(0.0, Math.min(1.0, (normMouthW - 0.72) / 0.23));
 
     return {
         eye_openness,
