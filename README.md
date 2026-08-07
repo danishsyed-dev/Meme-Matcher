@@ -202,7 +202,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 ## 📬 Contact
 
-Made with ❤️ by **Danish**
+Made with ❤️ by **@danishsyed-dev**
 
 ---
 
